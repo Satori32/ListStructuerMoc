@@ -67,6 +67,8 @@ bool Add(LineList<T>& In,const T& Title, const T& Text) {
 int main() {
 	LineList<> X;
 
+	X.Title = "セカイりすと";
+
 	X.Push("hoGE", "HAgeZ");
 	Add<std::string>(X,"hoGE", "馬鹿野郎");
 	auto& Y = X.Get("hoGE");
