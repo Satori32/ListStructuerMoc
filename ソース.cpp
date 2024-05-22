@@ -55,14 +55,14 @@ struct LineList {
 		return F;
 	}
 
-	Node* Get(const String& Title) {
-		if (!Find(*this, Title)) { return nullptr; }//little duty.
+	Node& Get(const String& Title) {
+		if (!Find(*this, Title)) { this->Data.push_back({});return this->Data.back(); }//little duty.
 
 		for (auto& o : Data) {
-			if (o.Title == Title) { return &o; }
+			if (o.Title == Title) { return o; }
 		}
 
-		return nullptr;
+		return this->Data.back();
 	}
 
 	std::vector<Node> Data;
@@ -79,9 +79,9 @@ template<class T>
 bool Add(LineList<T>& In,const T& Title, const T& Text) {
 		if (!Find(In ,Title)) return false;
 
-		auto* X = In.Get(Title);
-		if (X == nullptr)return false;
-		X->Text += ' '+Text;
+		auto& X = In.Get(Title);
+		//if (X == nullptr)return false;
+		X.Text += ' '+Text;
 		return true;
 	}
 int main() {
