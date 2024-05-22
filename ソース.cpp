@@ -1,21 +1,18 @@
 #include <iostream>
 #include <vector>
 #include <string>
-
-template<class StringContainer =std::string
->
+#include <algorithm>
+template<class StringContainer =std::string>
 struct LineList {
 	struct Node {
-		const StringContainer& Title;
-		const StringContainer& Text;
+		StringContainer Title;
+		StringContainer Text;
+		//std::vector<std::uint8_t> Binary;
 	};
 
-	bool Find(const const StringContainer&& Title){
-		for (auto& o : Data) {
-			if (o.Title == Title) { return true; }
-		}
-		return false;
-	}
+	typedef StringContainer String;
+
+	
 	Node& operator [](std::size_t N) {
 		return Data[N];
 	}
@@ -28,17 +25,17 @@ struct LineList {
 		return Data.end();
 	}
 
-	bool Push(const StringContainer& Title , const StringContainer& Text) {
-		if (Find(Title)) return false;
+	bool Push(const StringContainer& Title, const StringContainer& Text) {
+		if (Find(*this, Title)) return false;
 		Data.push_back({ Title,Text });
 		return true;
 	}
 
-	bool Add(const StringContainer& Title, const StringContainer& Text) {
-		if (Find(Title)) return false;
-
-		auto& X = Get(Title);
-		X.Text += ' '+Text;
+	bool Erase(const StringContainer& Title) {
+		auto it = std::find_if(Data.begin(), Data.end(), [&](auto& o) {return o.Title == Title; });
+		bool F = it != Data.end();
+		Data.erase(it);
+		return F;
 	}
 
 	Node& Get(const StringContainer& Title) {
@@ -52,7 +49,28 @@ struct LineList {
 	std::vector<Node> Data;
 	std::string Title;
 };
+template<class T>
+bool Find(LineList<T> In,const T& Title){
+		for (auto& o :In.Data) {
+			if (o.Title == Title) { return true; }
+		}
+		return false;
+	}
+template<class T>
+bool Add(LineList<T>& In,const T& Title, const T& Text) {
+		if (!Find(In ,Title)) return false;
 
+		auto& X = In.Get(Title);
+		X.Text += ' '+Text;
+		return true;
+	}
 int main() {
 	LineList<> X;
+
+	X.Push("hoGE", "HAgeZ");
+	Add<std::string>(X,"hoGE", "”nŽ­–ì˜Y");
+	auto& Y = X.Get("hoGE");
+
+	X.Erase("hoGE");
+	
 }
