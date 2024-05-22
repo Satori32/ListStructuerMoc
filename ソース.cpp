@@ -5,7 +5,7 @@
 template<class String =std::string>
 struct LineList {
 
-	enum class Progress
+	enum class Progress//this list is need the write by your hand
 	{
 		Zero,
 		WaitStart,
