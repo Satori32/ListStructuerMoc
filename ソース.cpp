@@ -2,15 +2,31 @@
 #include <vector>
 #include <string>
 #include <algorithm>
-template<class StringContainer =std::string>
+template<class String =std::string>
 struct LineList {
-	struct Node {
-		StringContainer Title;
-		StringContainer Text;
-		//std::vector<std::uint8_t> Binary;
+
+	enum class Progress
+	{
+		Zero,
+		WaitStart,
+		Initialize,
+		Start,
+		First,
+		Mid,
+		Later,
+		End,
+		waitDestruction,
+		complete,
 	};
 
-	typedef StringContainer String;
+	struct Node {
+		Progress F=Progress::Zero;
+		String Title;
+		String Text;
+		std::vector<std::uint8_t> Binary;
+	};
+
+	typedef String String;
 
 	
 	Node& operator [](std::size_t N) {
@@ -25,32 +41,35 @@ struct LineList {
 		return Data.end();
 	}
 
-	bool Push(const StringContainer& Title, const StringContainer& Text) {
+	bool Push(const String& Title, const String& Text) {
 		if (Find(*this, Title)) return false;
-		Data.push_back({ Title,Text });
+
+		Data.push_back({ {},Title,Text,{} });
 		return true;
 	}
 
-	bool Erase(const StringContainer& Title) {
+	bool Erase(const String& Title) {
 		auto it = std::find_if(Data.begin(), Data.end(), [&](auto& o) {return o.Title == Title; });
 		bool F = it != Data.end();
-		Data.erase(it);
+		if (F) { Data.erase(it); }
 		return F;
 	}
 
-	Node& Get(const StringContainer& Title) {
-		Node N{ {"Null"},{"Null"} };
-		for(auto& o:Data){
-			if (o.Title == Title) { return o; }
+	Node* Get(const String& Title) {
+		if (!Find(*this, Title)) { return nullptr; }//little duty.
+
+		for (auto& o : Data) {
+			if (o.Title == Title) { return &o; }
 		}
-		return N;
+
+		return nullptr;
 	}
 
 	std::vector<Node> Data;
 	std::string Title;
 };
 template<class T>
-bool Find(LineList<T> In,const T& Title){
+bool Find(LineList<T> In,const T& Title){//in.find();
 		for (auto& o :In.Data) {
 			if (o.Title == Title) { return true; }
 		}
@@ -60,8 +79,9 @@ template<class T>
 bool Add(LineList<T>& In,const T& Title, const T& Text) {
 		if (!Find(In ,Title)) return false;
 
-		auto& X = In.Get(Title);
-		X.Text += ' '+Text;
+		auto* X = In.Get(Title);
+		if (X == nullptr)return false;
+		X->Text += ' '+Text;
 		return true;
 	}
 int main() {
@@ -71,8 +91,10 @@ int main() {
 
 	X.Push("hoGE", "HAgeZ");
 	Add<std::string>(X,"hoGE", "”nŽ­–ì˜Y");
-	auto& Y = X.Get("hoGE");
+	auto Y = X.Get("hoGE");
 
 	X.Erase("hoGE");
+
+	return 0;
 	
 }
